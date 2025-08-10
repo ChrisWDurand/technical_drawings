@@ -1,6 +1,1 @@
-requests
-opencv-python
-pdf2image
-Pillow
-ezdxf
-matplotlib
+# Please pull this readme and update your local repo. 
