@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  collector:
+    build: .
+    volumes:
+      - ./data:/app/data
+  cvat:
+    image: openvinotoolkit/cvat-server
+    environment:
+      CVAT_REDIS_HOST: cvat_redis
+      CVAT_POSTGRES_HOST: cvat_db
+    ports:
+      - "8080:8080"
+    depends_on:
+      - cvat_db
+      - cvat_redis
+    volumes:
+      - ./data:/home/django/data
+  cvat_redis:
+    image: redis:6
+  cvat_db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
