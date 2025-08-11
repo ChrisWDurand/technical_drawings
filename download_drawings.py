@@ -28,15 +28,18 @@ from skimage.morphology import skeletonize
 import networkx as nx
 
 SESSION = requests.Session()
-SESSION.trust_env = False
+# Respect system proxy settings by default; overridden with ``--no-proxy``.
+SESSION.trust_env = True
 
 
 def http_get(url: str, **kwargs) -> requests.Response:
-    """HTTP GET that ignores system proxy settings."""
+    """HTTP GET using the configured ``SESSION``."""
     try:
         resp = SESSION.get(url, **kwargs)
     except requests.exceptions.ProxyError as e:  # pragma: no cover - network failure
-        raise RuntimeError("Proxy connection failed; check network access") from e
+        raise RuntimeError(
+            "Proxy connection failed; use --no-proxy or check network access"
+        ) from e
     resp.raise_for_status()
     return resp
 
@@ -222,7 +225,14 @@ def main(argv: Iterable[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Download engineering drawings")
     parser.add_argument("queries", nargs="+", help="search terms")
     parser.add_argument("--limit", type=int, default=50, help="images per source")
+    parser.add_argument(
+        "--no-proxy",
+        action="store_true",
+        help="ignore system proxy settings for HTTP requests",
+    )
     args = parser.parse_args(argv)
+
+    SESSION.trust_env = not args.no_proxy
 
     for query in args.queries:
         process_query(query, args.limit)

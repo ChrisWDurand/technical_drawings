@@ -6,8 +6,8 @@ tools). The `download_drawings.py` script queries open sources such as NASA's
 image library and Wikimedia Commons. Files are converted to PNG, skeletonized
 and translated into simple graphs for experimentation with computer-vision and
 graph-learning models. A [CVAT](https://github.com/opencv/cvat) service is
-included for annotating the collected data. The downloader bypasses system
-proxy settings, so a direct internet connection is required.
+included for annotating the collected data. The downloader uses system proxy
+settings by default; pass ``--no-proxy`` to bypass proxies if necessary.
 
 ## Structure
 - `download_drawings.py` – search NASA and Wikimedia for images, convert to PNG,
@@ -33,6 +33,8 @@ The script stores outputs under `data/` with subfolders:
    ```bash
    docker compose run --rm collector "mechanical engineering drawing" "work stand jig" --limit 5
    ```
+   Append `--no-proxy` if your environment sets proxies and they should be
+   ignored for the download.
 3. Launch CVAT for annotation:
    ```bash
    docker compose up cvat
