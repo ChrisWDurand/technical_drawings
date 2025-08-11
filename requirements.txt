@@ -1,0 +1,8 @@
+requests
+Pillow
+pdf2image
+opencv-python-headless
+scikit-image
+networkx
+ezdxf
+numpy

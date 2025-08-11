@@ -2,16 +2,27 @@
 
 This project provides a Docker-based environment for gathering internet images of
 mechanical engineering drawings (e.g., work stands, jigs and other production
-tools). Downloaded images are converted into PNG files ready for use in
-computer-vision training pipelines. A [CVAT](https://github.com/opencv/cvat)
-service is included for annotating the collected data.
+tools). The `download_drawings.py` script queries open sources such as NASA's
+image library and Wikimedia Commons. Files are converted to PNG, skeletonized
+and translated into simple graphs for experimentation with computer-vision and
+graph-learning models. A [CVAT](https://github.com/opencv/cvat) service is
+included for annotating the collected data. The downloader bypasses system
+proxy settings, so a direct internet connection is required.
 
 ## Structure
-- `download_drawings.py` – script to download images and convert them to PNG.
+- `download_drawings.py` – search NASA and Wikimedia for images, convert to PNG,
+  produce skeletons and graph representations.
 - `Dockerfile` – builds the image-collection container.
 - `docker-compose.yml` – runs the collector and a CVAT service sharing the same
   `data/` volume.
 - `requirements.txt` – Python dependencies for the collector script.
+
+The script stores outputs under `data/` with subfolders:
+- `raw/` – original downloads grouped by search term.
+- `png/` – converted PNG images.
+- `skeleton/` – skeletonized PNGs.
+- `graph/` – GraphML files derived from skeletons.
+- `metadata/` – JSON files describing the retrieved images and their licenses.
 
 ## Usage
 1. Build the collector container:
@@ -29,5 +40,6 @@ service is included for annotating the collected data.
    Open [http://localhost:8080](http://localhost:8080) in a browser and create a
    task using images from the shared `data/png` directory.
 
-The resulting PNG images and annotations can be used to train a computer vision
-model.
+The resulting PNG images, skeletons and graphs can be used to train a computer
+vision model. Always verify the license terms of downloaded content before
+redistributing or using the data in derived works.
