@@ -102,7 +102,7 @@ def search_wikimedia(query: str, limit: int) -> List[Dict]:
         "generator": "search",
         "gsrsearch": query,
         "gsrlimit": limit,
-        "iiprop": "url|mime",
+        "iiprop": "url|mime|extmetadata",
     }
     resp = http_get(COMMONS_API, params=params, timeout=30)
     data = resp.json()
