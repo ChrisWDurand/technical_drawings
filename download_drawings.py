@@ -26,6 +26,7 @@ import cv2
 import numpy as np
 from skimage.morphology import skeletonize
 import networkx as nx
+import re
 
 SESSION = requests.Session()
 # Respect system proxy settings by default; overridden with ``--no-proxy``.
@@ -257,8 +258,13 @@ def skeleton_to_graph(skel_path: Path, dest: Path) -> Path:
 # ----------------------------------------------------------------------------
 
 
-def process_query(query: str, limit: int, category_mode: bool = False) -> None:
-    query_sanitized = "_".join(query.split())
+def process_query(query, limit, source="both"):
+    results = []
+    if source in ("both","nasa"):
+        results += search_nasa(query, limit)
+    if source in ("both","commons"):
+        results += search_wikimedia(query, limit)
+    query_sanitized = re.sub(r'[^A-Za-z0-9._-]+', '_', query)
     raw_dir = RAW_DIR / query_sanitized
     png_dir = PNG_DIR / query_sanitized
     skel_dir = SKEL_DIR / query_sanitized
@@ -315,6 +321,7 @@ def main(argv: Iterable[str] | None = None) -> None:
         action="store_true",
         help="treat each query as a Wikimedia Commons category title",
     )
+    parser.add_argument("--source", choices=["both","commons","nasa"], default="both")
     args = parser.parse_args(argv)
 
     SESSION.trust_env = not args.no_proxy
